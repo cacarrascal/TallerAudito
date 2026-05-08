@@ -8,7 +8,7 @@ echo.
 
 echo [1] Installing dependencies...
 cd /d "%~dp0backend"
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 
 echo.
 echo [2] Starting backend server...
@@ -19,7 +19,7 @@ timeout /t 5 /nobreak
 
 echo.
 echo [4] Installing pytest...
-pip install pytest
+python -m pip install pytest
 
 echo.
 echo ========================================

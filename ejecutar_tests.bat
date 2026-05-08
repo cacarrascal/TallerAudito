@@ -11,20 +11,25 @@ start "Backend - Test" cmd /k "python app.py"
 timeout /t 3 /nobreak >nul
 
 echo [2] Instalando dependencias de tests...
-pip install -r "%~dp0tests\requirements.txt" >nul 2>&1
+echo Instalando pytest...
+python -m pip install pytest -q
+if errorlevel 1 (
+    echo Error en instalacion. Intentando de nuevo...
+    python -m pip install pytest
+)
 
 echo.
 echo ========================================
 echo   TESTS DE API
 echo ========================================
 cd /d "%~dp0tests"
-pytest test_api.py -v
+python -m pytest test_api.py -v
 
 echo.
 echo ========================================
 echo   TESTS DE SEGURIDAD
 echo ========================================
-pytest test_seguridad.py -v
+python -m pytest test_seguridad.py -v
 
 echo.
 echo ========================================

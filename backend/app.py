@@ -19,6 +19,7 @@ productos = [
 carrito = []
 usuarios = []
 bitacora = []
+pedidos = []
 
 ADMIN_CREDENTIALS = {"usuario": "admin", "password": "admin123", "nombre": "Administrador", "rol": "admin"}
 
@@ -107,6 +108,33 @@ def limpiar_carrito():
     global carrito
     carrito = []
     return jsonify({"mensaje": "Carrito vaciado"}), 200
+
+@app.route('/pagos/procesar', methods=['POST'])
+def procesar_pago():
+    global carrito, pedidos
+    
+    if not carrito:
+        return jsonify({"error": "El carrito esta vacio"}), 400
+    
+    datos = request.get_json()
+    usuario = datos.get('usuario', 'Invitado') if datos else 'Invitado'
+    
+    nuevo_pedido = {
+        "id": len(pedidos) + 1,
+        "fecha": datetime.now().strftime("%Y-%m-%d"),
+        "items": list(carrito),
+        "total": sum(item['precio'] * item['cantidad'] for item in carrito),
+        "usuario": usuario,
+        "estado": "Pendiente"
+    }
+    
+    pedidos.append(nuevo_pedido)
+    agregar_bitacora("PEDIDO", usuario, f"Nuevo pedido #{nuevo_pedido['id']} por ${nuevo_pedido['total']:.2f}")
+    
+    # Vaciar carrito
+    carrito = []
+    
+    return jsonify({"mensaje": "Pago procesado exitosamente", "pedido": nuevo_pedido}), 200
 
 @app.route('/usuarios/registro', methods=['POST'])
 def registro():
